@@ -1,0 +1,41 @@
+{
+  "analysis": {
+    "char_filter": {
+      "non_aln_char_removal_charfilter": {
+        "type": "pattern_replace",
+        "pattern": "[^\\s\\p{L}\\p{N}]",
+        "replacement": ""
+      }
+    },
+    "filter": {
+      "front_ngram": {
+        "type": "edge_ngram",
+        "min_gram": "1",
+        "max_gram": "15"
+      }
+    },
+    "analyzer": {
+      "i_prefix": {
+        "char_filter": [
+          "non_aln_char_removal_charfilter"
+        ],
+        "filter": [
+          "lowercase",
+          "asciifolding",
+          "front_ngram"
+        ],
+        "tokenizer": "standard"
+      },
+      "q_prefix": {
+        "char_filter": [
+          "non_aln_char_removal_charfilter"
+        ],
+        "filter": [
+          "lowercase",
+          "asciifolding"
+        ],
+        "tokenizer": "standard"
+      }
+    }
+  }
+}

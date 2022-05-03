@@ -1,0 +1,13 @@
+{
+  "properties": {
+    "audio_id" : {
+      "type": "keyword"
+    },
+    "audio_owner_id": {
+      "type": "keyword"
+    },
+    "user_id": {
+      "type": "keyword"
+    }
+  }
+}

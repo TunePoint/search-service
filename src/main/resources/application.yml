@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: search-service
+elasticsearch:
+  url: ${ELASTICSEARCH_URL}
+  templates:
+    - name: listen-events
+      patterns: listen-events-*
+      mapping-path: elastic/templates/listen-events-mappings.json
+    - name: follow-events
+      patterns: follow-events-*
+      mapping-path: elastic/templates/follow-events-mappings.json
+    - name: audio-like-events
+      patterns: audio-like-events-*
+      mapping-path: elastic/templates/audio-like-events-mappings.json
+    - name: playlist-like-events
+      patterns: playlist-like-events-*
+      mapping-path: elastic/templates/playlist-like-events-mappings.json
+
+event:
+  service-name: ${spring.application.name}
+  bootstrap-servers: ${KAFKA_URL}
+
+aggregation:
+  window: 300s
+  cron: 0 0,5,10,15,20,25,30,35,40,45,50,55 * ? * *
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8765/eureka}

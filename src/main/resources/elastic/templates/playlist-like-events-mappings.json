@@ -1,0 +1,16 @@
+{
+  "properties": {
+    "playlist_id": {
+      "type": "keyword"
+    },
+    "playlist_owner_id": {
+      "type": "keyword"
+    },
+    "user_id": {
+      "type": "keyword"
+    },
+    "delta": {
+      "type": "long"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "properties": {
+    "following_id" : {
+      "type": "keyword"
+    },
+    "follower_id": {
+      "type": "keyword"
+    },
+    "delta": {
+      "type": "integer"
+    }
+  }
+}

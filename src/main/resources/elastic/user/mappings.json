@@ -1,0 +1,73 @@
+{
+  "properties": {
+    "id": {
+      "type": "keyword"
+    },
+    "username": {
+      "type": "text",
+      "analyzer": "standard",
+      "index_options": "offsets",
+      "fields": {
+        "prefix": {
+          "type": "text",
+          "term_vector": "with_positions_offsets",
+          "index_options": "docs",
+          "analyzer": "i_prefix",
+          "search_analyzer": "q_prefix"
+        }
+      },
+      "position_increment_gap": 100
+    },
+    "first_name": {
+      "type": "text",
+      "index_options": "offsets",
+      "fields": {
+        "prefix": {
+          "type": "text",
+          "term_vector": "with_positions_offsets",
+          "index_options": "docs",
+          "analyzer": "i_prefix",
+          "search_analyzer": "q_prefix"
+        }
+      }
+    },
+    "last_name": {
+      "type": "text",
+      "index_options": "offsets",
+      "fields": {
+        "prefix": {
+          "type": "text",
+          "term_vector": "with_positions_offsets",
+          "index_options": "docs",
+          "analyzer": "i_prefix",
+          "search_analyzer": "q_prefix"
+        }
+      }
+    },
+    "pseudonym": {
+      "type": "text",
+      "index_options": "offsets",
+      "fields": {
+        "prefix": {
+          "type": "text",
+          "term_vector": "with_positions_offsets",
+          "index_options": "docs",
+          "analyzer": "i_prefix",
+          "search_analyzer": "q_prefix"
+        }
+      }
+    },
+    "bio": {
+      "type": "text"
+    },
+    "follower_count": {
+      "type": "long"
+    },
+    "following_count": {
+      "type": "long"
+    },
+    "listening_count": {
+      "type": "long"
+    }
+  }
+}
