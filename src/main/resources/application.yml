@@ -22,8 +22,8 @@ event:
   bootstrap-servers: ${KAFKA_URL}
 
 aggregation:
-  window: 300s
-  cron: 0 0,5,10,15,20,25,30,35,40,45,50,55 * ? * *
+  window: ${AGGREGATION_WINDOW:300s}
+  cron: ${AGGREGATION_CRON:"0 0,5,10,15,20,25,30,35,40,45,50,55 * ? * *"}
 
 eureka:
   client:
