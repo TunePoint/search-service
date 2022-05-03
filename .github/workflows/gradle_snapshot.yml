@@ -18,7 +18,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Build and publish with Gradle
-        run: ./gradlew build publish
+        run: ./gradlew build
         env:
           ARTIFACTORY_REPOSITORY: snapshots
           ARTIFACTORY_HOST: ${{ secrets.ARTIFACTORY_HOST }}
