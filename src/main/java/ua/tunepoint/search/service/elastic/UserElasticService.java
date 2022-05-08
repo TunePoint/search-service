@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ua.tunepoint.search.config.Indices;
 import ua.tunepoint.search.document.User;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -22,12 +23,12 @@ public class UserElasticService {
 
     public void update(Long id, String firstName, String lastName, String pseudonym, String bio) {
 
-        Map<String, Object> params = Map.of(
-                "first_name", firstName,
-                "last_name", lastName,
-                "pseudonym", pseudonym,
-                "bio", bio
-        );
+        Map<String, Object> params = new HashMap<>(){{
+            put("first_name", firstName);
+            put("last_name", lastName);
+            put("pseudonym", pseudonym);
+            put("bio", bio);
+        }};
 
         UpdateQuery query = UpdateQuery.builder(String.valueOf(id))
                 .withScript("""

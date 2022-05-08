@@ -1,6 +1,7 @@
 package ua.tunepoint.search.api;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +17,6 @@ import ua.tunepoint.search.api.model.AggregatedResponse;
 import ua.tunepoint.search.service.composite.CompositeAudioService;
 import ua.tunepoint.search.service.composite.CompositePlaylistService;
 import ua.tunepoint.search.service.composite.CompositeUserService;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -44,17 +43,17 @@ public class SearchController {
     }
 
     @GetMapping("/audio")
-    public List<AudioPayload> searchAudio(@PageableDefault Pageable pageable, @RequestParam("q") String queryString) {
+    public Page<AudioPayload> searchAudio(@PageableDefault Pageable pageable, @RequestParam("q") String queryString) {
         return audioService.searchAudio(queryString, pageable);
     }
 
     @GetMapping("/playlists")
-    public List<PlaylistPayload> searchPlaylists(@RequestParam("q") String queryString, @PageableDefault Pageable pageable) {
+    public Page<PlaylistPayload> searchPlaylists(@RequestParam("q") String queryString, @PageableDefault Pageable pageable) {
         return playlistService.search(queryString, pageable);
     }
 
     @GetMapping("/users")
-    public List<UserPublicPayload> searchUser(@PageableDefault Pageable pageable, @RequestParam("q") String queryString) {
+    public Page<UserPublicPayload> searchUser(@PageableDefault Pageable pageable, @RequestParam("q") String queryString) {
         return userService.searchUser(queryString, pageable);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ua.tunepoint.search.config.Indices;
 import ua.tunepoint.search.document.Audio;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -21,12 +22,12 @@ public class AudioElasticService {
     }
 
     public void update(Long id, String title, String description, String authorPseudonym, Boolean isPrivate) {
-        Map<String, Object> params = Map.of(
-                "title", title,
-                "description", description,
-                "author_pseudonym", authorPseudonym,
-                "is_private", isPrivate
-        );
+        Map<String, Object> params = new HashMap<>() {{
+            put("title", title);
+            put("description", description);
+            put("author_pseudonym", authorPseudonym);
+            put("is_private", isPrivate);
+        }};
 
         UpdateQuery query = UpdateQuery.builder(String.valueOf(id))
                 .withScript("""

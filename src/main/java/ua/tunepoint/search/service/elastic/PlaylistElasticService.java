@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ua.tunepoint.search.config.Indices;
 import ua.tunepoint.search.document.Playlist;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -21,11 +22,11 @@ public class PlaylistElasticService {
     }
 
     public void update(Long id, String title, String description, Boolean isPrivate) {
-        var params = Map.<String, Object>of(
-                "title", title,
-                "description", description,
-                "is_private", isPrivate
-        );
+        HashMap<String, Object> params = new HashMap<>(){{
+            put("title", title);
+            put("description", description);
+            put("is_private", isPrivate);
+        }};
 
         var updateQuery = UpdateQuery.builder(String.valueOf(id))
                 .withScript("""

@@ -27,7 +27,7 @@ aggregation:
 
 eureka:
   client:
-    register-with-eureka: true
-    fetch-registry: true
+    register-with-eureka: ${ENABLE_EUREKA:true}
+    fetch-registry: ${ENABLE_EUREKA:true}
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8765/eureka}

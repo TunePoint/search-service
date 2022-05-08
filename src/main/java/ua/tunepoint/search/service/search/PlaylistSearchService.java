@@ -3,6 +3,8 @@ package ua.tunepoint.search.service.search;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -20,7 +22,7 @@ public class PlaylistSearchService {
 
     private final ElasticsearchOperations operations;
 
-    public List<Playlist> search(String queryString, Pageable pageable) {
+    public Page<Playlist> search(String queryString, Pageable pageable) {
 
         NativeSearchQuery query = new NativeSearchQueryBuilder()
                 .withFilter(QueryBuilders.termQuery("is_private", false))
@@ -52,9 +54,12 @@ public class PlaylistSearchService {
                 .withPageable(pageable)
                 .build();
 
-        var hits = operations.search(query, Playlist.class).getSearchHits();
+        var hits = operations.searchForStream(query, Playlist.class);
 
-        return hits.stream().map(SearchHit::getContent)
-                .collect(Collectors.toList());
+        return new PageImpl<>(
+                hits.stream().map(SearchHit::getContent).collect(Collectors.toList()),
+                pageable,
+                hits.getTotalHits()
+        );
     }
 }

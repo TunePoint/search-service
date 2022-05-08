@@ -3,15 +3,15 @@ package ua.tunepoint.search.service.search;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import ua.tunepoint.search.document.User;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,7 +20,7 @@ public class UserSearchService {
 
     private final ElasticsearchOperations client;
 
-    public List<User> searchUser(String searchQuery, Pageable pageable) {
+    public Page<User> searchUser(String searchQuery, Pageable pageable) {
         var multimatchQuery = new NativeSearchQueryBuilder()
                 .withQuery(
                         QueryBuilders.functionScoreQuery(
@@ -55,9 +55,12 @@ public class UserSearchService {
                 .withPageable(pageable)
                 .build();
 
-        var hits = client.search(multimatchQuery, User.class).getSearchHits();
+        var hits = client.searchForStream(multimatchQuery, User.class);
 
-        return hits.stream().map(SearchHit::getContent)
-                .collect(Collectors.toList());
+        return new PageImpl<>(
+                hits.stream().map(SearchHit::getContent).collect(Collectors.toList()),
+                pageable,
+                hits.getTotalHits()
+        );
     }
 }
