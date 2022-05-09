@@ -3,24 +3,46 @@ package ua.tunepoint.search.service.search;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.RestStatusException;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
+import ua.tunepoint.search.api.model.ElasticScroll;
+import ua.tunepoint.search.config.Indices;
 import ua.tunepoint.search.document.Audio;
+import ua.tunepoint.web.exception.BadRequestException;
 
-import java.util.stream.Collectors;
+import static ua.tunepoint.search.config.ElasticConfiguration.SCROLL_TIME_MS;
 
 @Service
 @RequiredArgsConstructor
 public class AudioSearchService {
 
-    private final ElasticsearchOperations operations;
+    private static final String SCRIPT_FUNCTION = """
+            _score \
+            * ( \
+                  doc['listening_count'].size() == 0 || doc['listening_count'].value == null ? 1 : \
+                  ( \
+                      doc['listening_count'].value < 10 ? 1 : \
+                          Math.log10(doc['listening_count'].value) \
+                  ) \
+              ) \
+            * ( \
+                  doc['like_count'].size() == 0 || doc['listening_count'].value == null? 1 : \
+                  ( \
+                      doc['like_count'].value < 2 ? 1 : \
+                          Math.log(doc['like_count'].value) \
+                  ) \
+              )\
+              """;
 
-    public Page<Audio> search(String searchQuery, Pageable pageable) {
+    private final ElasticsearchOperations operations; // if it's not here, template can't be injected. why? i have no clue
+    private final ElasticsearchRestTemplate template;
+
+    public ElasticScroll<Audio> search(String searchQuery, Integer pageSize) {
 
         var multimatchQuery = new NativeSearchQueryBuilder()
                 .withFilter(QueryBuilders.termQuery("is_private", false))
@@ -31,36 +53,25 @@ public class AudioSearchService {
                                         .field("author_pseudonym", 3).field("author_pseudonym.prefix", 1)
                                         .field("description", 1f)
                                         .fuzziness("3"),
-                                ScoreFunctionBuilders.scriptFunction(
-                                        """
-                                          _score \
-                                          * ( \
-                                                doc['listening_count'].size() == 0 || doc['listening_count'].value == null ? 1 : \
-                                                ( \
-                                                    doc['listening_count'].value < 10 ? 1 : \
-                                                        Math.log10(doc['listening_count'].value) \
-                                                ) \
-                                            ) \
-                                          * ( \
-                                                doc['like_count'].size() == 0 || doc['listening_count'].value == null? 1 : \
-                                                ( \
-                                                    doc['like_count'].value < 2 ? 1 : \
-                                                        Math.log(doc['like_count'].value) \
-                                                ) \
-                                            )\
-                                        """
-                                )
+                                ScoreFunctionBuilders.scriptFunction(SCRIPT_FUNCTION)
                         )
                 )
-                .withPageable(pageable)
+                .withPageable(Pageable.ofSize(pageSize))
                 .build();
 
-        var hits = operations.searchForStream(multimatchQuery, Audio.class);
-
-        return new PageImpl<>(
-                hits.stream().map(SearchHit::getContent).collect(Collectors.toList()),
-                pageable,
-                hits.getTotalHits()
+        var scroll = template.searchScrollStart(
+                SCROLL_TIME_MS, multimatchQuery, Audio.class, IndexCoordinates.of(Indices.AUDIO_INDEX)
         );
+
+        return new ElasticScroll<>(scroll);
+    }
+
+    public ElasticScroll<Audio> search(String scrollId) {
+        try {
+            var scroll = template.searchScrollContinue(scrollId, SCROLL_TIME_MS, Audio.class, IndexCoordinates.of(Indices.AUDIO_INDEX));
+            return new ElasticScroll<>(scroll);
+        } catch (RestStatusException ex) {
+            throw new BadRequestException("Scroll id " + scrollId + " is not valid");
+        }
     }
 }

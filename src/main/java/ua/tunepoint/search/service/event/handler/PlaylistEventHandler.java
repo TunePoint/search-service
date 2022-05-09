@@ -58,7 +58,7 @@ public class PlaylistEventHandler {
         log(event);
         playlistElasticService.save(
                 new Playlist(
-                        event.getPlaylistId(), event.getPlaylistOwnerId(),
+                        event.getPlaylistId(), event.getPlaylistOwnerId(), event.getType(),
                         event.getTitle(), event.getDescription(),
                         event.getIsPrivate(), 0L, 0L
                 )
@@ -75,6 +75,7 @@ public class PlaylistEventHandler {
         playlistElasticService.update(
                 event.getPlaylistId(),
                 event.getTitle(),
+                event.getType(),
                 event.getDescription(),
                 event.getIsPrivate()
         );

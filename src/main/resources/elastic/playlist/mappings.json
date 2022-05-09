@@ -6,6 +6,9 @@
     "owner_id": {
       "type": "keyword"
     },
+    "type": {
+      "type": "keyword"
+    },
     "title": {
       "type": "text",
       "analyzer": "standard",

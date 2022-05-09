@@ -21,11 +21,12 @@ public class PlaylistElasticService {
         template.save(playlist);
     }
 
-    public void update(Long id, String title, String description, Boolean isPrivate) {
+    public void update(Long id, String title, String type, String description, Boolean isPrivate) {
         HashMap<String, Object> params = new HashMap<>(){{
             put("title", title);
             put("description", description);
             put("is_private", isPrivate);
+            put("type", type);
         }};
 
         var updateQuery = UpdateQuery.builder(String.valueOf(id))

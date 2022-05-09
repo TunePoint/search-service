@@ -26,6 +26,9 @@ public class Playlist {
     @Field(type = FieldType.Keyword, name = "owner_id")
     private Long ownerId;
 
+    @Field(type = FieldType.Keyword, name = "type")
+    private String type;
+
     @Field(type = FieldType.Text, name = "title")
     private String title;
 

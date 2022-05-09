@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ua.tunepoint.audio.model.event.audio.AudioCreatedEvent;
+import ua.tunepoint.audio.model.event.audio.AudioDeletedEvent;
 import ua.tunepoint.audio.model.event.audio.AudioLikeEvent;
 import ua.tunepoint.audio.model.event.audio.AudioListenEvent;
 import ua.tunepoint.audio.model.event.audio.AudioUnlikeEvent;
@@ -61,6 +62,11 @@ public class AudioEventHandler {
                         1
                 )
         );
+    }
+
+    public void handleAudioDeleted(AudioDeletedEvent event) {
+        log(event);
+        audioElasticService.delete(event.getAudioId());
     }
 
     public void handleAudioUnlike(AudioUnlikeEvent event) {

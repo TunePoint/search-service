@@ -5,55 +5,66 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import ua.tunepoint.account.model.response.payload.UserPublicPayload;
-import ua.tunepoint.audio.model.response.payload.AudioPayload;
-import ua.tunepoint.audio.model.response.payload.PlaylistPayload;
-import ua.tunepoint.search.api.model.AggregatedResponse;
-import ua.tunepoint.search.service.composite.CompositeAudioService;
-import ua.tunepoint.search.service.composite.CompositePlaylistService;
-import ua.tunepoint.search.service.composite.CompositeUserService;
+import ua.tunepoint.search.api.model.AudioSearchResponse;
+import ua.tunepoint.search.api.model.PlaylistSearchResponse;
+import ua.tunepoint.search.api.model.UserSearchResponse;
+import ua.tunepoint.search.service.composite.AudioSearchFacade;
+import ua.tunepoint.search.service.composite.PlaylistSearchFacade;
+import ua.tunepoint.search.service.composite.UserSearchFacade;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/search")
 public class SearchController {
 
-    private final CompositeUserService userService;
-    private final CompositePlaylistService playlistService;
-    private final CompositeAudioService audioService;
-
-    @GetMapping
-    public AggregatedResponse search(@RequestParam("q") String queryString, @PageableDefault Pageable pageable) {
-        return Mono.zip(
-                        Mono.fromSupplier(() -> userService.searchUser(queryString, pageable)),
-                        Mono.fromSupplier(() -> audioService.searchAudio(queryString, pageable)),
-                        Mono.fromSupplier(() -> playlistService.search(queryString, pageable))
-                )
-                .map(
-                        it -> new AggregatedResponse(
-                                it.getT1(), it.getT3(), it.getT2()
-                        )
-                )
-                .subscribeOn(Schedulers.boundedElastic()).block();
-    }
+    private final UserSearchFacade userService;
+    private final PlaylistSearchFacade playlistService;
+    private final AudioSearchFacade audioService;
 
     @GetMapping("/audio")
-    public Page<AudioPayload> searchAudio(@PageableDefault Pageable pageable, @RequestParam("q") String queryString) {
-        return audioService.searchAudio(queryString, pageable);
+    public AudioSearchResponse searchAudio(@RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize, @RequestParam("q") String queryString) {
+        return AudioSearchResponse.builder()
+                .payload(audioService.searchAudio(queryString, pageSize))
+                .build();
+    }
+
+    @GetMapping("/audio/{scrollId}")
+    public AudioSearchResponse searchAudioWithScrollId(@PathVariable String scrollId) {
+        return AudioSearchResponse.builder()
+                .payload(audioService.searchAudio(scrollId))
+                .build();
     }
 
     @GetMapping("/playlists")
-    public Page<PlaylistPayload> searchPlaylists(@RequestParam("q") String queryString, @PageableDefault Pageable pageable) {
-        return playlistService.search(queryString, pageable);
+    public PlaylistSearchResponse searchPlaylists(@RequestParam("q") String queryString, @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
+        return PlaylistSearchResponse.builder()
+                .payload(playlistService.search(queryString, pageSize))
+                .build();
+    }
+
+    @GetMapping("/playlists/{scrollId}")
+    public PlaylistSearchResponse searchPlaylistsByScrollId(@PathVariable String scrollId) {
+        return PlaylistSearchResponse.builder()
+                .payload(playlistService.search(scrollId))
+                .build();
     }
 
     @GetMapping("/users")
-    public Page<UserPublicPayload> searchUser(@PageableDefault Pageable pageable, @RequestParam("q") String queryString) {
-        return userService.searchUser(queryString, pageable);
+    public UserSearchResponse searchUser(@RequestParam("q") String queryString, @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
+        return UserSearchResponse.builder()
+                .payload(userService.searchUsers(queryString, pageSize))
+                .build();
+    }
+
+    @GetMapping("/users/{scrollId}")
+    public UserSearchResponse scrollUsers(@PathVariable String scrollId) {
+        return UserSearchResponse.builder()
+                .payload(userService.searchUsers(scrollId))
+                .build();
     }
 }

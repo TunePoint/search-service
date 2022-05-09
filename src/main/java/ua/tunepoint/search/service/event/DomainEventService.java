@@ -6,6 +6,7 @@ import ua.tunepoint.account.model.event.profile.ProfileUpdatedEvent;
 import ua.tunepoint.account.model.event.user.UserFollowedEvent;
 import ua.tunepoint.account.model.event.user.UserUnfollowedEvent;
 import ua.tunepoint.audio.model.event.audio.AudioCreatedEvent;
+import ua.tunepoint.audio.model.event.audio.AudioDeletedEvent;
 import ua.tunepoint.audio.model.event.audio.AudioLikeEvent;
 import ua.tunepoint.audio.model.event.audio.AudioListenEvent;
 import ua.tunepoint.audio.model.event.audio.AudioUnlikeEvent;
@@ -44,6 +45,7 @@ public class DomainEventService {
                 .forDomain(AUDIO.getName())
                     .onEvent(AudioCreatedEvent.class, audioEventHandler::handleAudioCreated)
                     .onEvent(AudioUpdatedEvent.class, audioEventHandler::handleAudioUpdated)
+                    .onEvent(AudioDeletedEvent.class, audioEventHandler::handleAudioDeleted)
                     .onEvent(AudioLikeEvent.class, audioEventHandler::handleAudioLike)
                     .onEvent(AudioUnlikeEvent.class, audioEventHandler::handleAudioUnlike)
                     .onEvent(AudioListenEvent.class, audioEventHandler::handleAudioListen)

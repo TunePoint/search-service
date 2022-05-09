@@ -30,6 +30,8 @@ public class ElasticConfiguration
         extends AbstractElasticsearchConfiguration
         implements ApplicationListener<ApplicationReadyEvent> {
 
+    public static final Long SCROLL_TIME_MS = 60000L;
+
     @Autowired
     private ElasticProperties elasticProps;
 
@@ -70,9 +72,4 @@ public class ElasticConfiguration
                         .readAllBytes()
         );
     }
-
-//    @PostConstruct
-//    public void initMappings(ElasticsearchRestTemplate template) {
-//        template.indexOps()
-//    }
 }

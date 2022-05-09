@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'ua.tunepoint'
-version = '0.0.3'
+version = '0.0.4'
 sourceCompatibility = '17'
 
 configurations {
@@ -36,11 +36,12 @@ dependencies {
     implementation 'ua.tunepoint:commons-event-model:0.0.10'
     implementation 'ua.tunepoint:commons-event-starter:0.0.10'
     implementation 'ua.tunepoint:auth-model:0.0.9'
-    implementation 'ua.tunepoint:audio-api:0.0.13'
-    implementation 'ua.tunepoint:audio-model:0.0.13'
+    implementation 'ua.tunepoint:audio-api:0.0.15'
+    implementation 'ua.tunepoint:audio-model:0.0.15'
     implementation 'ua.tunepoint:account-api:0.0.11'
     implementation 'ua.tunepoint:account-model:0.0.11'
-    implementation 'ua.tunepoint:commons-web-model:0.0.3'
+    implementation 'ua.tunepoint:commons-web-model:0.0.5'
+    implementation 'ua.tunepoint:commons-web-exception:0.0.5'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
