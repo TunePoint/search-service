@@ -9,7 +9,6 @@ import ua.tunepoint.search.config.Indices;
 import ua.tunepoint.search.document.Playlist;
 
 import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +33,7 @@ public class PlaylistElasticService {
                         ctx._source.title = params.title;
                         ctx._source.description = params.description;
                         ctx._source.is_private = params.is_private;
+                        ctx._source.type = params.type;
                         """)
                 .withParams(params)
                 .build();

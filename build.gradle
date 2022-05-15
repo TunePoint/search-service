@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'ua.tunepoint'
-version = '0.0.4'
+version = '0.0.5'
 sourceCompatibility = '17'
 
 configurations {
@@ -38,8 +38,8 @@ dependencies {
     implementation 'ua.tunepoint:auth-model:0.0.9'
     implementation 'ua.tunepoint:audio-api:0.0.15'
     implementation 'ua.tunepoint:audio-model:0.0.15'
-    implementation 'ua.tunepoint:account-api:0.0.11'
-    implementation 'ua.tunepoint:account-model:0.0.11'
+    implementation 'ua.tunepoint:account-api:0.0.14'
+    implementation 'ua.tunepoint:account-model:0.0.14'
     implementation 'ua.tunepoint:commons-web-model:0.0.5'
     implementation 'ua.tunepoint:commons-web-exception:0.0.5'
 

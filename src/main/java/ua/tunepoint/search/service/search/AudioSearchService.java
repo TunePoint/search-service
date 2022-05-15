@@ -31,7 +31,7 @@ public class AudioSearchService {
                   ) \
               ) \
             * ( \
-                  doc['like_count'].size() == 0 || doc['listening_count'].value == null? 1 : \
+                  doc['like_count'].size() == 0 || doc['like_count'].value == null? 1 : \
                   ( \
                       doc['like_count'].value < 2 ? 1 : \
                           Math.log(doc['like_count'].value) \

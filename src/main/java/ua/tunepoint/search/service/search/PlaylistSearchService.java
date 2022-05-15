@@ -3,24 +3,18 @@ package ua.tunepoint.search.service.search;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.RestStatusException;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import ua.tunepoint.search.api.model.ElasticScroll;
 import ua.tunepoint.search.config.Indices;
-import ua.tunepoint.search.document.Audio;
 import ua.tunepoint.search.document.Playlist;
 import ua.tunepoint.web.exception.BadRequestException;
-
-import java.util.stream.Collectors;
 
 import static ua.tunepoint.search.config.ElasticConfiguration.SCROLL_TIME_MS;
 
@@ -29,21 +23,14 @@ import static ua.tunepoint.search.config.ElasticConfiguration.SCROLL_TIME_MS;
 public class PlaylistSearchService {
 
     private final static String SCRIPT_FUNCTION = """
-            _score *
-              * ( \
-                    doc['listening_count'].size() == 0 ||  doc['listening_count'].value == null ? 1 : \
-                    ( \
-                        doc['listening_count'].value < 10 ? 1 : \
-                            Math.log10(doc['listening_count'].value) \
-                    ) \
-                ) \
-              * ( \
-                    doc['like_count'].size() == 0 ||  doc['listening_count'].value == null? 1 : \
-                    ( \
-                        doc['like_count'].value < 2 ? 1 : \
-                            Math.log(doc['like_count'].value) \
-                    ) \
-                )\
+            _score \
+            * ( \
+                  (doc['like_count'].size() == 0 || doc['like_count'].value == null) ? 1 : \
+                  ( \
+                      doc['like_count'].value < 3 ? 1 : \
+                          Math.log(doc['like_count'].value) \
+                  ) \
+              )\
             """;
 
     private final ElasticsearchOperations operations; // if it's not here, template can't be injected. why? i have no clue
@@ -57,7 +44,6 @@ public class PlaylistSearchService {
                         QueryBuilders.functionScoreQuery(
                                 QueryBuilders.multiMatchQuery(queryString)
                                         .field("title", 4).field("title.prefix", 1)
-                                        .field("author_pseudonym", 2).field("author_pseudonym.prefix", 1)
                                         .field("description", 1.5f).field("description.prefix", 1.1f),
                                 ScoreFunctionBuilders.scriptFunction(SCRIPT_FUNCTION)
                         )
