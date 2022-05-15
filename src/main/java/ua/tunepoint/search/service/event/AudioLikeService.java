@@ -53,10 +53,10 @@ public class AudioLikeService {
 
             UpdateQuery updateQuery = UpdateQuery.builder(audio.getAudioId())
                     .withScript("""
-                            if (ctx._source.like_delta == null) {
-                                ctx._source.like_delta = params.like_delta
+                            if (ctx._source.like_count == null) {
+                                ctx._source.like_count = params.like_delta
                             } else {
-                                ctx._source.like_delta += params.like_delta
+                                ctx._source.like_count += params.like_delta
                             }
                             """)
                     .withParams(params)
